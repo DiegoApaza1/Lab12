@@ -1,17 +1,19 @@
 package com.tecsup.lab12
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
-
 
 @Composable
 fun MapScreen() {
@@ -20,6 +22,9 @@ fun MapScreen() {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(ArequipaLocation, 12f)
     }
 
+    val context = LocalContext.current
+    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.montanas)
+    val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false) // Ajusta el tamaño según necesites
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Añadir GoogleMap al layout
@@ -27,11 +32,14 @@ fun MapScreen() {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState
         ) {
-            // Añadir marcador en Denver, Colorado
+            // Añadir marcador en Arequipa, Perú
             Marker(
                 state = rememberMarkerState(position = ArequipaLocation),
-                title = "Arequipa, Perú"
+                icon = BitmapDescriptorFactory.fromBitmap(scaledBitmap), // Icono escalado
+                title = "Arequipa, Perú",
             )
+
+
         }
     }
 }
