@@ -1,21 +1,47 @@
 package com.tecsup.lab12
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.Polyline
+import androidx.compose.foundation.layout.*
+import com.google.maps.android.compose.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 @Composable
 fun MapScreen() {
@@ -23,16 +49,44 @@ fun MapScreen() {
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(ArequipaLocation, 12f)
     }
+    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+
 
     val context = LocalContext.current
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.montanas)
     val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false) // Ajusta el tamaño según necesites
 
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxWidth().padding(8.dp), contentAlignment = Alignment.TopStart) {
+            Row() {
+                Button(onClick = { mapType = MapType.NORMAL }) {
+                    Text("Normal")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = { mapType = MapType.HYBRID }) {
+                    Text("Hybrid")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = { mapType = MapType.SATELLITE }) {
+                    Text("Satellite")
+                }
+            }
+        }
+        Box(modifier = Modifier.fillMaxWidth().padding(8.dp), contentAlignment = Alignment.TopStart) {
+            Row {
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = { mapType = MapType.TERRAIN }) {
+                    Text("Terrain")
+                }
+            }
+        }
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Añadir GoogleMap al layout
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(mapType = mapType)
         ) {
             // Añadir marcador en Arequipa, Perú
             Marker(
@@ -122,4 +176,5 @@ fun MapScreen() {
             )
         }
     }
+}
 }
